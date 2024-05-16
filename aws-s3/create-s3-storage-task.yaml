@@ -1,0 +1,19 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: create-s3-bucket
+spec:
+  description: Create S3 storage bucket in AWS
+  workspaces:
+  - name: source
+  steps:
+  - name: create-s3-bucket
+    image: ubuntu 
+    script: | 
+      #!/usr/bin/env  bash
+      cd $(workspaces.source.path) && ls -alt
+      chmod 755 creates3storage.sh
+      pwd
+      ls -alt
+      $(workspaces.source.path)/creates3storage.sh  -i <aws-access-key> -s <aws-secret-access-key>
+      
