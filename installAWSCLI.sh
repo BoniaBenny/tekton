@@ -4,6 +4,7 @@
 
 AWS_ACCESS_KEY_ID=''
 AWS_SECRET_ACCESS_KEY=''
+ARCH=$(uname -m)
 
 showHelp () {
         cat << EOF
@@ -53,13 +54,21 @@ echo "aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}" >> ~/.aws/credentials
 echo "[default]" >> ~/.aws/config
 echo "region = eu-north-1" >> ~/.aws/config
 
-# install aws cli for ARM64 architecture
+# Choose appropriate AWS CLI installation based on the architecture
+if [ "$ARCH" = "x86_64" ]; then
+    AWS_CLI_URL="https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+elif [ "$ARCH" = "aarch64" ]; then
+    AWS_CLI_URL="https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip"
+else
+    echo "Unsupported architecture: $ARCH"
+    exit 1
+fi
+
+
+# install aws cli 
 apt update
 apt install -y curl unzip groff
-curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
+curl "$AWS_CLI_URL" -o "awscliv2.zip"
 unzip awscliv2.zip
 ./aws/install
-rm -rf aws awscliv2.zip
 
-# list vms
-aws ec2 describe-instances
