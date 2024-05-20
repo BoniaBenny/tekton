@@ -76,10 +76,28 @@ else
   echo "Instance ID for the VM $VM_NAME: $INSTANCE_ID"
 fi
 
+# Check the current state of the instance
+INSTANCE_STATE=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --region $AWS_REGION --query "Reservations[*].Instances[*].State.Name" --output text)
+
+if [ "$INSTANCE_STATE" == "terminated" ]; then
+  echo "The instance $INSTANCE_ID is already terminated."
+  exit 0
+else
+  echo "Current state of the instance $INSTANCE_ID: $INSTANCE_STATE"
+fi
+
 # terminate the vm
 aws ec2 terminate-instances --instance-ids $INSTANCE_ID
 
 sleep 10
 
-# describe the status of the vm
+# describe the latest status of the vm
+INSTANCE_STATE=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --region $AWS_REGION --query "Reservations[*].Instances[*].State.Name" --output text)
+
+if [ "$INSTANCE_STATE" == "terminated" ]; then
+  echo "The instance $INSTANCE_ID has been terminated successfully."
+else
+  echo "The instance $INSTANCE_ID is in state: $INSTANCE_STATE"
+fi
+
 aws ec2 describe-instances --instance-ids $INSTANCE_ID --query "Reservations[*].Instances[*].[InstanceId,State.Name,PublicIpAddress]" --output table
