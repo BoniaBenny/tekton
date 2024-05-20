@@ -66,9 +66,6 @@ apt update
 apt install -y curl unzip groff
 ./aws/install
 
-# list vms
-aws ec2 describe-instances
-
 # get instance ID for the given VM
 INSTANCE_ID=$(aws ec2 describe-instances --region $AWS_REGION --filters "Name=tag:Name,Values=$VM_NAME" --query "Reservations[*].Instances[*].InstanceId" --output text)
 

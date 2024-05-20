@@ -1,0 +1,18 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: install-aws-cli
+spec:
+  description: Install AWS CLI
+  workspaces:
+  - name: source
+  steps:
+  - name: install-aws-cli
+    image: ubuntu 
+    script: | 
+      #!/usr/bin/env  bash
+      cd $(workspaces.source.path) && ls -alt
+      chmod 755 installAWSCLI.sh
+      pwd
+      ls -alt
+      $(workspaces.source.path)/installAWSCLI.sh  -i *** -s ***

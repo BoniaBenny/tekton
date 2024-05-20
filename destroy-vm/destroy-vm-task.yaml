@@ -1,0 +1,20 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: destroy-vm
+spec:
+  description: Create S3 storage bucket in AWS
+  workspaces:
+  - name: source
+  steps:
+  - name: destroy-vm
+    image: ubuntu 
+    script: | 
+      #!/usr/bin/env  bash
+      cd $(workspaces.source.path) && ls -alt
+      chmod 755 destroy-vm.sh
+      pwd
+      ls -alt
+      $(workspaces.source.path)/destroy-vm.sh  -i *** -s *** -v ***
+      echo "Destroyed VM successfully!"
+      
