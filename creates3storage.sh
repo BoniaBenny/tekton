@@ -58,8 +58,9 @@ apt update
 apt install -y curl unzip groff
 ./aws/install
 
-# install jq
+
 apt-get install jq -y
+apt-get install openssh-client -y
 
 # create a key pair
 aws ec2 create-key-pair --key-name My_Pair --query 'KeyMaterial' --output text > My_KeyPair.pem
@@ -84,7 +85,14 @@ PUBLIC_DNS=$(aws ec2 describe-instances --instance-ids ${INSTANCE_ID} --query 'R
 
 ssh -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null" -i My_KeyPair.pem admin@${PUBLIC_DNS} './testscript.sh'
 
+echo "****"
+echo "Listing contents inside VM:"
+ls
+echo "Current working directory:"
+pwd
+echo "****"
+
 # copy file from VM to S3 bucket
-aws s3 cp hostname_output.txt s3://test-tekton-aws-cli/
+aws s3 cp $PWD/hostname_output.txt s3://test-tekton-aws-cli/
 
 
