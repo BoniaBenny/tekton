@@ -58,6 +58,33 @@ apt update
 apt install -y curl unzip groff
 ./aws/install
 
+# install jq
+apt-get install jq -y
+
+# create a key pair
+aws ec2 create-key-pair --key-name My_Pair --query 'KeyMaterial' --output text > My_KeyPair.pem
+chmod 400 My_KeyPair.pem
+
 # create s3 storage
 aws s3 ls --profile default
 aws s3api create-bucket --bucket test-tekton-aws-cli --region us-east-1 
+# create a folder
+aws s3api put-object --bucket test-tekton-aws-cli --key folder-1/
+
+echo "****"
+echo "Listing contents"
+ls
+echo "****"
+
+
+INSTANCE_ID=$(aws ec2 describe-instances --filters Name=tag:Name,Values=tektontest1 Name=instance-state-name,Values=running | jq -e -r ".Reservations[].Instances[].InstanceId")
+
+# get PublicDNS & ssh into the VM
+PUBLIC_DNS=$(aws ec2 describe-instances --instance-ids ${INSTANCE_ID} --query 'Reservations[].Instances[].PublicDnsName' | jq -e -r ".[]")
+
+ssh -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null" -i My_KeyPair.pem admin@${PUBLIC_DNS} './testscript.sh'
+
+# copy file from VM to S3 bucket
+aws s3 cp hostname_output.txt s3://test-tekton-aws-cli/
+
+

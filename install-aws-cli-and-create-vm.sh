@@ -72,8 +72,10 @@ curl "$AWS_CLI_URL" -o "awscliv2.zip"
 unzip awscliv2.zip
 ./aws/install
 
-# list vms
-aws ec2 describe-instances
+echo "****"
+echo "Listing contents"
+ls
+echo "****"
 
 # install jq
 apt-get install jq -y
@@ -123,7 +125,7 @@ aws ec2 run-instances \
 
   # test the copying of a script to new instance
   echo "#!/bin/bash" >> testscript.sh
-  echo "echo \$(hostname)" >> testscript.sh
+  echo "echo \$(hostname) > hostname_output.txt" >> testscript.sh\
   chmod 755 testscript.sh
 
   # install scp
