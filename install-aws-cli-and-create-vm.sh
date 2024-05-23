@@ -141,8 +141,6 @@ aws ec2 run-instances \
   echo "sleeping for 20 secs"
   sleep 20
 
-  # reduce permissions on .pem file
-  chmod 400 My_KeyPair.pem
 
 
   # scp file over to new instance and execute it 
