@@ -81,7 +81,7 @@ echo "****"
 apt-get install jq -y
 
 # create a key pair
-aws ec2 create-key-pair --key-name My_Pair --query 'KeyMaterial' --output text > My_KeyPair.pem
+aws ec2 create-key-pair --key-name My_Pair1 --query 'KeyMaterial' --output text > My_KeyPair.pem
 
 echo "****"
 cat My_KeyPair.pem
@@ -98,13 +98,13 @@ AMI_ID=ami-0506d6d51f1916a96
 
 # Create a security group
 aws ec2 create-security-group \
-    --group-name my-sg \
+    --group-name my-sg1 \
     --description "AWS ec2 CLI MY SG" \
-    --tag-specifications 'ResourceType=security-group,Tags=[{Key=Name,Value=my-sg}]' \
+    --tag-specifications 'ResourceType=security-group,Tags=[{Key=Name,Value=my-sg1}]' \
     --vpc-id "${VPC_ID}"
 
 # get the security group id
-SECURITY_GROUP_ID=$(aws ec2 describe-security-groups --filter="Name=group-name,Values=my-sg" | jq -e -r ".SecurityGroups[0].GroupId")
+SECURITY_GROUP_ID=$(aws ec2 describe-security-groups --filter="Name=group-name,Values=my-sg1" | jq -e -r ".SecurityGroups[0].GroupId")
 
 # create an ingress rule for ssh access
 aws ec2 authorize-security-group-ingress \
@@ -118,7 +118,7 @@ aws ec2 run-instances \
   --image-id ${AMI_ID} \
   --count 1 \
   --instance-type t3.micro \
-  --key-name My_Pair \
+  --key-name My_Pair1 \
   --security-group-ids ${SECURITY_GROUP_ID} \
   --subnet-id ${SUBNET_ID} \
   --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=tektontest1}]'
