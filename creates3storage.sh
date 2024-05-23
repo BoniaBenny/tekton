@@ -63,8 +63,8 @@ apt-get install jq -y
 apt-get install openssh-client -y
 
 # create a key pair
-aws ec2 create-key-pair --key-name My_Pair6 --query 'KeyMaterial' --output text > My_KeyPair.pem
-chmod 400 My_KeyPair.pem
+# aws ec2 create-key-pair --key-name My_Pair6 --query 'KeyMaterial' --output text > My_KeyPair.pem
+chmod 400 My_KeyPair1.pem
 
 # create s3 storage
 aws s3 ls --profile default
@@ -87,7 +87,7 @@ PUBLIC_DNS=$(aws ec2 describe-instances --instance-ids ${INSTANCE_ID} --query 'R
 
 ssh -o "StrictHostKeyChecking no" \
     -o "UserKnownHostsFile /dev/null" \
-    -i My_KeyPair.pem \
+    -i My_KeyPair1.pem \
     admin@${PUBLIC_DNS} \
     'chmod 755 ~/testscript.sh && \
     bash ~/testscript.sh && \
