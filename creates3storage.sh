@@ -63,7 +63,7 @@ apt-get install jq -y
 apt-get install openssh-client -y
 
 # create a key pair
-aws ec2 create-key-pair --key-name My_Pair --query 'KeyMaterial' --output text > My_KeyPair.pem
+aws ec2 create-key-pair --key-name My_Pair6 --query 'KeyMaterial' --output text > My_KeyPair.pem
 chmod 400 My_KeyPair.pem
 
 # create s3 storage
@@ -83,16 +83,39 @@ INSTANCE_ID=$(aws ec2 describe-instances --filters Name=tag:Name,Values=tektonte
 # get PublicDNS & ssh into the VM
 PUBLIC_DNS=$(aws ec2 describe-instances --instance-ids ${INSTANCE_ID} --query 'Reservations[].Instances[].PublicDnsName' | jq -e -r ".[]")
 
-ssh -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null" -i My_KeyPair.pem admin@${PUBLIC_DNS} './testscript.sh'
+# ssh -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null" -i My_KeyPair.pem admin@${PUBLIC_DNS} 'chmod 755 ~/testscript.sh && bash ~/testscript.sh && echo "****"'
 
-echo "****"
-echo "Listing contents inside VM:"
-ls
-echo "Current working directory:"
-pwd
-echo "****"
+ssh -o "StrictHostKeyChecking no" \
+    -o "UserKnownHostsFile /dev/null" \
+    -i My_KeyPair.pem \
+    admin@${PUBLIC_DNS} \
+    'chmod 755 ~/testscript.sh && \
+    bash ~/testscript.sh && \
+    echo "****" && \
+    echo "Listing contents inside VM:" && \
+    ls && \
+    echo "Current working directory:" && \
+    pwd && \
+    echo "****" && \
+    aws s3 cp $PWD/hostname_output.txt s3://test-tekton-aws-cli/'
 
-# copy file from VM to S3 bucket
-aws s3 cp $PWD/hostname_output.txt s3://test-tekton-aws-cli/
+
+
+# ssh -o "StrictHostKeyChecking no" \
+#     -o "UserKnownHostsFile /dev/null" \
+#     -i My_KeyPair.pem \
+#     admin@${PUBLIC_DNS} << 'EOF'
+# chmod 755 ~/testscript.sh && \
+# bash ~/testscript.sh && \
+# echo "****" && \
+# echo "Listing contents inside VM:" && \
+# ls && \
+# echo "Current working directory:" && \
+# pwd && \
+# echo "****" && \
+# aws s3 cp ~/hostname_output.txt s3://test-tekton-aws-cli/
+# EOF
+
+
 
 
