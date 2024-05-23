@@ -97,24 +97,11 @@ ssh -o "StrictHostKeyChecking no" \
     echo "Current working directory:" && \
     pwd && \
     echo "****" && \
+    aws configure set aws_access_key_id AKIAV7JLKA3BHDTWJM7X && \
+    aws configure set aws_secret_access_key 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 && \
+    aws configure set default.region us-east-1 && \
     aws s3 cp $PWD/hostname_output.txt s3://test-tekton-aws-cli/'
 
-
-
-# ssh -o "StrictHostKeyChecking no" \
-#     -o "UserKnownHostsFile /dev/null" \
-#     -i My_KeyPair.pem \
-#     admin@${PUBLIC_DNS} << 'EOF'
-# chmod 755 ~/testscript.sh && \
-# bash ~/testscript.sh && \
-# echo "****" && \
-# echo "Listing contents inside VM:" && \
-# ls && \
-# echo "Current working directory:" && \
-# pwd && \
-# echo "****" && \
-# aws s3 cp ~/hostname_output.txt s3://test-tekton-aws-cli/
-# EOF
 
 
 
