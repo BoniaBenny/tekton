@@ -81,7 +81,7 @@ echo "****"
 apt-get install jq -y
 
 # create a key pair
-aws ec2 create-key-pair --key-name My_Pair3 --query 'KeyMaterial' --output text > My_KeyPair.pem
+aws ec2 create-key-pair --key-name My_Pair4 --query 'KeyMaterial' --output text > My_KeyPair.pem
 
 echo "****"
 cat My_KeyPair.pem
@@ -118,7 +118,7 @@ aws ec2 run-instances \
   --image-id ${AMI_ID} \
   --count 1 \
   --instance-type t3.micro \
-  --key-name My_Pair3 \
+  --key-name My_Pair4 \
   --security-group-ids ${SECURITY_GROUP_ID} \
   --subnet-id ${SUBNET_ID} \
   --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=tektontest2}]'
@@ -147,4 +147,4 @@ aws ec2 run-instances \
   # scp file over to new instance and execute it 
   scp  -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null" -i My_KeyPair.pem -r ./testscript.sh admin@${PUBLIC_DNS}:~/
 
-  ssh -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null" -i My_KeyPair.pem admin@${PUBLIC_DNS} './testscript.sh'
+  ssh -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null" -i My_KeyPair.pem admin@${PUBLIC_DNS} 'chmod 755 ~/testscript.sh && ~/testscript.sh'
