@@ -121,7 +121,7 @@ aws ec2 run-instances \
   --key-name My_Pair1 \
   --security-group-ids ${SECURITY_GROUP_ID} \
   --subnet-id ${SUBNET_ID} \
-  --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=tektontest1}]'
+  --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=tektontest2}]'
 
   # test the copying of a script to new instance
   echo "#!/bin/bash" >> testscript.sh
@@ -132,7 +132,7 @@ aws ec2 run-instances \
   apt-get install openssh-client -y
 
   # get the instanceID
-  INSTANCE_ID=$(aws ec2 describe-instances --filters Name=tag:Name,Values=tektontest1 Name=instance-state-name,Values=running | jq -e -r ".Reservations[].Instances[].InstanceId")
+  INSTANCE_ID=$(aws ec2 describe-instances --filters Name=tag:Name,Values=tektontest2 Name=instance-state-name,Values=running | jq -e -r ".Reservations[].Instances[].InstanceId")
 
   # get the instance PublicDNS
   PUBLIC_DNS=$(aws ec2 describe-instances --instance-ids ${INSTANCE_ID} --query 'Reservations[].Instances[].PublicDnsName' | jq -e -r ".[]")

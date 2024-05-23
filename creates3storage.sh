@@ -78,7 +78,7 @@ ls
 echo "****"
 
 
-INSTANCE_ID=$(aws ec2 describe-instances --filters Name=tag:Name,Values=tektontest1 Name=instance-state-name,Values=running | jq -e -r ".Reservations[].Instances[].InstanceId")
+INSTANCE_ID=$(aws ec2 describe-instances --filters Name=tag:Name,Values=tektontest2 Name=instance-state-name,Values=running | jq -e -r ".Reservations[].Instances[].InstanceId")
 
 # get PublicDNS & ssh into the VM
 PUBLIC_DNS=$(aws ec2 describe-instances --instance-ids ${INSTANCE_ID} --query 'Reservations[].Instances[].PublicDnsName' | jq -e -r ".[]")
