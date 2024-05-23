@@ -77,19 +77,26 @@ echo "Listing contents"
 ls
 echo "****"
 
+echo "aws_access_key_id: ${AWS_ACCESS_KEY_ID}" >> s3_credentials.yaml
+echo "aws_secret_access_key: ${AWS_SECRET_ACCESS_KEY}" >> s3_credentials.yaml
+echo "region: us-east-1" >> s3_credentials.yaml
+
 
 INSTANCE_ID=$(aws ec2 describe-instances --filters Name=tag:Name,Values=tektontest2 Name=instance-state-name,Values=running | jq -e -r ".Reservations[].Instances[].InstanceId")
 
 # get PublicDNS & ssh into the VM
 PUBLIC_DNS=$(aws ec2 describe-instances --instance-ids ${INSTANCE_ID} --query 'Reservations[].Instances[].PublicDnsName' | jq -e -r ".[]")
 
-# ssh -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null" -i My_KeyPair.pem admin@${PUBLIC_DNS} 'chmod 755 ~/testscript.sh && bash ~/testscript.sh && echo "****"'
+scp  -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null" -i s3_credentials.yaml -r ./testscript.sh admin@${PUBLIC_DNS}:~/
 
 ssh -o "StrictHostKeyChecking no" \
     -o "UserKnownHostsFile /dev/null" \
     -i My_KeyPair1.pem \
     admin@${PUBLIC_DNS} \
-    'chmod 755 ~/testscript.sh && \
+    'wget https://github.com/mikefarah/yq/releases/download/v4.13.4/yq_linux_amd64 -O yq && \
+    chmod +x yq && \
+    sudo mv yq /usr/local/bin && \
+    chmod 755 ~/testscript.sh && \
     bash ~/testscript.sh && \
     echo "****" && \
     echo "Listing contents inside VM:" && \
@@ -97,12 +104,11 @@ ssh -o "StrictHostKeyChecking no" \
     echo "Current working directory:" && \
     pwd && \
     echo "****" && \
-    aws configure set aws_access_key_id AKIAV7JLKA3BHDTWJM7X && \
-    aws configure set aws_secret_access_key 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 && \
-    aws configure set default.region us-east-1 && \
+    key_id=$(yq e '.aws_access_key_id' s3_credentials.yaml) && \
+    secret_id=$(yq e '.aws_secret_access_key' s3_credentials.yaml) && \
+    region=$(yq e '.region' s3_credentials.yaml) && \
+    aws configure set aws_access_key_id $key_id && \
+    aws configure set aws_secret_access_key $secret_id && \
+    aws configure set region $region && \
     aws s3 cp $PWD/hostname_output.txt s3://test-tekton-aws-cli/'
-
-
-
-
 

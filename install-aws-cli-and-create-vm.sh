@@ -81,7 +81,7 @@ echo "****"
 apt-get install jq -y
 
 # create a key pair
-aws ec2 create-key-pair --key-name My_Pair8 --query 'KeyMaterial' --output text > My_KeyPair1.pem
+aws ec2 create-key-pair --key-name My_Pair9 --query 'KeyMaterial' --output text > My_KeyPair1.pem
 
 echo "****"
 cat My_KeyPair1.pem
@@ -118,7 +118,7 @@ aws ec2 run-instances \
   --image-id ${AMI_ID} \
   --count 1 \
   --instance-type t3.micro \
-  --key-name My_Pair8 \
+  --key-name My_Pair9 \
   --security-group-ids ${SECURITY_GROUP_ID} \
   --subnet-id ${SUBNET_ID} \
   --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=tektontest2}]'
