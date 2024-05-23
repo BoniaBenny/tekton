@@ -81,7 +81,7 @@ echo "****"
 apt-get install jq -y
 
 # create a key pair
-aws ec2 create-key-pair --key-name My_Pair9 --query 'KeyMaterial' --output text > My_KeyPair1.pem
+aws ec2 create-key-pair --key-name My_Pair10 --query 'KeyMaterial' --output text > My_KeyPair1.pem
 
 echo "****"
 cat My_KeyPair1.pem
@@ -118,10 +118,10 @@ aws ec2 run-instances \
   --image-id ${AMI_ID} \
   --count 1 \
   --instance-type t3.micro \
-  --key-name My_Pair9 \
+  --key-name My_Pair10 \
   --security-group-ids ${SECURITY_GROUP_ID} \
   --subnet-id ${SUBNET_ID} \
-  --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=tektontest2}]'
+  --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=tektontest1}]'
 
   # test the copying of a script to new instance
   echo "#!/bin/bash" >> testscript.sh
@@ -132,7 +132,7 @@ aws ec2 run-instances \
   apt-get install openssh-client -y
 
   # get the instanceID
-  INSTANCE_ID=$(aws ec2 describe-instances --filters Name=tag:Name,Values=tektontest2 Name=instance-state-name,Values=running | jq -e -r ".Reservations[].Instances[].InstanceId")
+  INSTANCE_ID=$(aws ec2 describe-instances --filters Name=tag:Name,Values=tektontest1 Name=instance-state-name,Values=running | jq -e -r ".Reservations[].Instances[].InstanceId")
 
   # get the instance PublicDNS
   PUBLIC_DNS=$(aws ec2 describe-instances --instance-ids ${INSTANCE_ID} --query 'Reservations[].Instances[].PublicDnsName' | jq -e -r ".[]")
